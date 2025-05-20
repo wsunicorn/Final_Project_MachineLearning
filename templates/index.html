@@ -224,9 +224,9 @@
       <div id="modelinfo" class="section bg-white p-4 rounded-xl shadow hidden">
         <h2 class="text-2xl font-bold mb-4">3. Thông tin mô hình</h2>
         <ul class="list-disc pl-6">
-          <li>SVM: Kernel RBF, phù hợp dữ liệu phi tuyến tính</li>
-          <li>Random Forest: Sử dụng nhiều cây để tránh overfit</li>
-          <li>Custom SVM: Triển khai thủ công, tối ưu với gradient descent</li>
+          <li>SVM: Kernel RBF, C: 1, gamma: Scale </li>
+          <li>Random Forest: max_deep = 20, estimo = 200</li>
+          <li>Custom SVM: Kernel RBF, C: 1, gamma: Scale, lr = 0.01, iter = 10000</li>
         </ul>
       </div>
     </div>

@@ -99,7 +99,7 @@ class CustomSVM:
         return np.where(np.sign(decision) == 1, 1, 0)
 
 # Read data
-data = pd.read_csv('features_handcraft_pca.csv')
+data = pd.read_csv('features_handcraft.csv')
 X = data.drop('label', axis=1)
 y = data['label']
 
@@ -138,9 +138,9 @@ print("Custom SVM Accuracy:", accuracy_score(y_test, custom_svm_pred))
 print("Custom SVM Report:\n", classification_report(y_test, custom_svm_pred))
 
 # Save models
-joblib.dump(scaler, 'scaler_model.pkl')
-joblib.dump(pca, 'pca_model.pkl')
-joblib.dump(svm, 'svm_model.pkl')
-joblib.dump(rf, 'rf_model.pkl')
+joblib.dump(scaler, 'models/scaler_model.pkl')
+joblib.dump(pca, 'models/pca_model.pkl')
+joblib.dump(svm, 'models/svm_model.pkl')
+joblib.dump(rf, 'models/rf_model.pkl')
 joblib.dump(custom_svm, 'custom_svm_model.pkl')
 print("Saved files: scaler_model.pkl, pca_model.pkl, svm_model.pkl, rf_model.pkl, custom_svm_model.pkl")

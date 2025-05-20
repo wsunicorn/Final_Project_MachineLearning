@@ -14,10 +14,10 @@ app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
 # Tải các mô hình và scaler
 try:
-    scaler = joblib.load('scaler_model.pkl')
-    pca = joblib.load('pca_model.pkl')
-    svm_model = joblib.load('svm_model.pkl')
-    rf_model = joblib.load('rf_model.pkl')
+    scaler = joblib.load('models/scaler_model.pkl')
+    pca = joblib.load('models/pca_model.pkl')
+    svm_model = joblib.load('models/svm_model.pkl')
+    rf_model = joblib.load('models/rf_model.pkl')
 except FileNotFoundError as e:
     print(f"Lỗi: Không tìm thấy file mô hình: {e}")
     scaler = pca = svm_model = rf_model = None
