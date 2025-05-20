@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from cvxopt import matrix, solvers
+
 import joblib
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
@@ -31,8 +33,9 @@ class CustomSVM:
             X2 = X2.to_numpy()
 
         # Tính kernel RBF: exp(-gamma * ||x1 - x2||^2)
-        if self.gamma == 'scale':
-            self.gamma = 1.0 / (X1.shape[1] * np.var(X1))
+        gamma = self.gamma
+        if gamma == 'scale':
+            gamma = 1.0 / (X1.shape[1] * np.var(X1))
         
         # Ensure X1 and X2 are 2D arrays
         if X1.ndim == 1:
@@ -41,7 +44,7 @@ class CustomSVM:
             X2 = X2.reshape(1, -1)
         
         squared_dist = np.sum(X1**2, axis=1).reshape(-1, 1) + np.sum(X2**2, axis=1) - 2 * np.dot(X1, X2.T)
-        return np.exp(-self.gamma * squared_dist)
+        return np.exp(-gamma * squared_dist)
 
     def fit(self, X, y):
         # Convert pandas DataFrame/Series to NumPy array
@@ -84,6 +87,7 @@ class CustomSVM:
         self.support_vector_labels_ = y_[sv_indices]
         self.support_vector_weights_ = self.weights[sv_indices]
 
+
     def predict(self, X):
         # Convert pandas DataFrame/Series to NumPy array
         if isinstance(X, (pd.DataFrame, pd.Series)):
@@ -95,12 +99,12 @@ class CustomSVM:
         return np.where(np.sign(decision) == 1, 1, 0)
 
 # Read data
-data = pd.read_csv('features_handcraft.csv')
+data = pd.read_csv('features_handcraft_pca.csv')
 X = data.drop('label', axis=1)
 y = data['label']
 
 # Split train/test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Standardize
 scaler = StandardScaler()
@@ -114,22 +118,22 @@ X_test_pca = pca.transform(X_test_scaled)
 
 # Train SVC
 svm = SVC(probability=True, kernel='rbf', random_state=42)
-svm.fit(X_train_pca, y_train)
-svm_pred = svm.predict(X_test_pca)
+svm.fit(X_train, y_train)
+svm_pred = svm.predict(X_test)
 print("SVM Accuracy:", accuracy_score(y_test, svm_pred))
 print("SVM Report:\n", classification_report(y_test, svm_pred))
 
 # Train Random Forest
-rf = RandomForestClassifier(n_estimators=100, random_state=42)
-rf.fit(X_train_pca, y_train)
-rf_pred = rf.predict(X_test_pca)
+rf = RandomForestClassifier(n_estimators=200,max_depth=20 ,random_state=42)
+rf.fit(X_train, y_train)
+rf_pred = rf.predict(X_test)
 print("Random Forest Accuracy:", accuracy_score(y_test, rf_pred))
 print("Random Forest Report:\n", classification_report(y_test, rf_pred))
 
 # Train Custom SVM
 custom_svm = CustomSVM(C=1.0, gamma='scale', learning_rate=0.01, max_iterations=1000)
-custom_svm.fit(X_train_pca, y_train)
-custom_svm_pred = custom_svm.predict(X_test_pca)
+custom_svm.fit(X_train, y_train)
+custom_svm_pred = custom_svm.predict(X_test)
 print("Custom SVM Accuracy:", accuracy_score(y_test, custom_svm_pred))
 print("Custom SVM Report:\n", classification_report(y_test, custom_svm_pred))
 
