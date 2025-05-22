@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nhận diện ảnh Thật/Giả</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 w-full h-full flex items-center justify-center">
+  <div class="flex w-[90%] h-[90%] shadow-2xl rounded-2xl overflow-hidden">
+    <!-- Slide trái -->
+    <div class="w-1/2 overflow-y-auto p-6 space-y-6 bg-white">
+      <!-- Menu -->
+      <div class="flex space-x-4 mb-4">
+        <button onclick="switchSection('intro')" class="bg-gray-100 hover:bg-blue-200 px-4 py-2 rounded-lg">Giới
+          thiệu</button>
+        <button onclick="switchSection('evaluate')" class="bg-gray-100 hover:bg-blue-200 px-4 py-2 rounded-lg">Đánh
+          giá</button>
+        <button onclick="switchSection('modelinfo')" class="bg-gray-100 hover:bg-blue-200 px-4 py-2 rounded-lg">Thông
+          tin mô hình</button>
+      </div>
+
+      <div id="intro" class="section bg-white p-4 rounded-xl shadow hidden">
+        <h2 class="text-2xl font-bold mb-4">1. Giới thiệu</h2>
+        <p class="mb-4 text-gray-700">
+          Bài toán nhận dạng ảnh thật và ảnh giả là một bài toán phân loại nhị phân (binary classification).
+          Mục tiêu là xây dựng một mô hình học máy có khả năng phân biệt ảnh thật (do con người chụp) và ảnh giả (do AI
+          tạo ra).
+          Dữ liệu đầu vào là các hình ảnh thật và ảnh giả, đầu ra là nhãn phân loại: <strong>1 nếu là ảnh thật</strong>,
+          <strong>0 nếu là ảnh giả</strong>.
+        </p>
+        <!-- Nút lọc -->
+        <div class="flex space-x-4 mb-4">
+          <button onclick="showSection('all')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tất
+            cả</button>
+          <button onclick="showSection('fake')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Ảnh
+            giả</button>
+          <button onclick="showSection('real')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Ảnh
+            thật</button>
+        </div>
+
+        <!-- Phần TẤT CẢ -->
+        <div id="section-all" class="bg-white p-4 rounded-xl shadow">
+          <h3 class="text-xl font-semibold mb-2">Tổng quan</h3>
+          <table class="w-full mb-6 text-sm border rounded">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">Loại</th>
+                <th class="p-2">Số lượng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t">
+                <td class="p-2">Tổng số ảnh</td>
+                <td class="p-2">3417</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">Ảnh giả</td>
+                <td class="p-2">1710</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">Ảnh thật</td>
+                <td class="p-2">1707</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Phần ẢNH GIẢ -->
+        <div id="section-fake" class="bg-white p-4 rounded-xl shadow hidden">
+          <h3 class="text-xl font-semibold mb-2 text-red-700">Ảnh giả</h3>
+          <table class="w-full mb-4 text-sm border rounded">
+            <thead class="bg-red-100">
+              <tr>
+                <th class="p-2 text-left">Loại phong cảnh</th>
+                <th class="p-2">Số lượng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t">
+                <td class="p-2">mountain</td>
+                <td class="p-2">570</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">sea</td>
+                <td class="p-2">570</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">jungle</td>
+                <td class="p-2">540</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">forest</td>
+                <td class="p-2">30</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4 class="text-md font-semibold mb-2">Công cụ tạo ảnh giả</h4>
+          <table class="w-full text-sm border rounded">
+            <thead class="bg-red-100">
+              <tr>
+                <th class="p-2 text-left">Công cụ</th>
+                <th class="p-2">Số lượng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t">
+                <td class="p-2">stable</td>
+                <td class="p-2">804</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">dalle</td>
+                <td class="p-2">776</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">dreamstudio</td>
+                <td class="p-2">70</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">mid journey</td>
+                <td class="p-2">30</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">crayon</td>
+                <td class="p-2">15</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">bing</td>
+                <td class="p-2">15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Phần ẢNH THẬT -->
+        <div id="section-real" class="bg-white p-4 rounded-xl shadow hidden">
+          <h3 class="text-xl font-semibold mb-2 text-green-700">Ảnh thật</h3>
+          <table class="w-full text-sm border rounded">
+            <thead class="bg-green-100">
+              <tr>
+                <th class="p-2 text-left">Loại phong cảnh</th>
+                <th class="p-2">Số lượng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-t">
+                <td class="p-2">mountain</td>
+                <td class="p-2">570</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">sea</td>
+                <td class="p-2">569</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">jungle</td>
+                <td class="p-2">538</td>
+              </tr>
+              <tr class="border-t">
+                <td class="p-2">forest</td>
+                <td class="p-2">30</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="evaluate" class="section bg-white p-4 rounded-xl shadow hidden">
+        <h2 class="text-2xl font-bold mb-4">2. Đánh giá mô hình</h2>
+        <div class="flex flex-wrap gap-4 mb-6">
+          <button onclick="showModelEval('svm')" class="px-4 py-2 bg-blue-100 hover:bg-blue-300 rounded">SVM</button>
+          <button onclick="showModelEval('rf')" class="px-4 py-2 bg-green-100 hover:bg-green-300 rounded">Random
+            Forest</button>
+          <button onclick="showModelEval('custom')" class="px-4 py-2 bg-purple-100 hover:bg-purple-300 rounded">Custom
+            SVM</button>
+        </div>
+        <div id="eval-svm" class="model-eval hidden">
+          <div class="bg-gray-50 p-4 rounded-xl shadow text-center">
+            <h3 class="font-semibold mb-2 text-blue-700">SVM</h3>
+            <img src="static/svm_val.png" alt="SVM Evaluation" class="mx-auto rounded max-h-96 object-contain">
+          </div>
+        </div>
+        <div id="eval-rf" class="model-eval hidden">
+          <div class="bg-gray-50 p-4 rounded-xl shadow text-center">
+            <h3 class="font-semibold mb-2 text-green-700">Random Forest</h3>
+            <img src="static/rf_val.png" alt="Random Forest Evaluation" class="mx-auto rounded max-h-96 object-contain">
+          </div>
+        </div>
+        <div id="eval-custom" class="model-eval hidden">
+          <div class="bg-gray-50 p-4 rounded-xl shadow text-center">
+            <h3 class="font-semibold mb-2 text-purple-700">Custom SVM</h3>
+            <img src="static/customSvm_val.png" alt="Custom SVM Evaluation"
+              class="mx-auto rounded max-h-96 object-contain">
+          </div>
+        </div>
+      </div>
+
+      <div id="modelinfo" class="section bg-white p-4 rounded-xl shadow hidden">
+        <h2 class="text-2xl font-bold mb-4">3. Thông tin mô hình</h2>
+        <ul class="list-disc pl-6">
+          <li>SVM: Kernel RBF, C: 1, gamma: Scale </li>
+          <li>Random Forest: max_deep = 20, estimo = 200</li>
+          <li>Custom SVM: Kernel RBF, C: 1, gamma: Scale, lr = 0.01, iter = 10000</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Slide phải: Dự đoán -->
+    <div class="w-1/2 overflow-y-auto p-6 bg-white">
+      <div id="predict" class="bg-white p-6 rounded-xl shadow">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">Nhận diện ảnh Thật hay AI</h1>
+        <div id="imagePreview" class="mb-6 hidden">
+          <div class="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+            <img id="previewImg" src="" alt="Uploaded Image" class="w-full h-full object-contain" />
+            <button onclick="clearPreview()"
+              class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Form -->
+        <form method="post" enctype="multipart/form-data" id="uploadForm" onsubmit="showLoading()">
+          <div class="mb-6">
+            <label for="file" class="block text-sm font-medium text-gray-700 mb-2">Chọn ảnh:</label>
+            <div class="relative">
+              <input type="file" id="file" name="file" accept=".png,.jpg,.jpeg" required onchange="previewImage(event)"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+              <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+              </span>
+            </div>
+          </div>
+          <div class="mb-6">
+            <label for="model" class="block text-sm font-medium text-gray-700 mb-2">Chọn mô hình:</label>
+            <select id="model" name="model"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50">
+              <option value="svm">SVM</option>
+              <option value="rf">Random Forest</option>
+              <option value="custom_svm">Custom SVM</option>
+            </select>
+          </div>
+          <button type="submit" id="submitBtn"
+            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center">
+            <span id="btnText">Dự đoán</span>
+            <svg id="loadingSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+          </button>
+        </form>
+        <!-- {% if result %}
+        <div class="mt-6 p-4 bg-green-100 border border-green-400 rounded-lg text-center">
+          <p class="text-xl font-semibold text-gray-800">Kết quả: <span class="text-blue-700">{{ result }}</span>
+          </p>
+          <p class="text-sm text-gray-700 mt-2">Tỷ lệ ảnh giả: {{ prob_fake }}</p>
+          <p class="text-sm text-gray-700">Tỷ lệ ảnh thật: {{ prob_real }}</p>
+          <p class="text-sm text-gray-700">Mô hình sử dụng: {{ model_used }}</p>
+        </div>
+        {% endif %} -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const previewDiv = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        previewDiv.classList.remove('hidden');
+        previewImg.src = URL.createObjectURL(file);
+      }
+    }
+
+    function clearPreview() {
+      const previewDiv = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('previewImg');
+      const fileInput = document.getElementById('file');
+      previewDiv.classList.add('hidden');
+      previewImg.src = '';
+      fileInput.value = '';
+    }
+
+    function showLoading() {
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      submitBtn.disabled = true;
+      btnText.textContent = 'Đang xử lý...';
+      loadingSpinner.classList.remove('hidden');
+    }
+
+    function switchSection(id) {
+      ['intro', 'evaluate', 'modelinfo'].forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.classList.add('hidden');
+        }
+      });
+      const active = document.getElementById(id);
+      if (active) {
+        active.classList.remove('hidden');
+      }
+    }
+
+    function showModelEval(type) {
+      ['svm', 'rf', 'custom'].forEach(t => {
+        document.getElementById('eval-' + t).classList.add('hidden');
+      });
+      document.getElementById('eval-' + type).classList.remove('hidden');
+    }
+    document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      showLoading();
+      const form = e.target;
+      const formData = new FormData(form);
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        // XÓA kết quả cũ nếu có
+        const oldResult = document.getElementById('resultBox');
+        if (oldResult) oldResult.remove();
+
+        // Tạo kết quả mới
+        const resultBox = document.createElement('div');
+        resultBox.id = 'resultBox';  // Gắn ID để xoá lần sau
+        resultBox.innerHTML = `
+      <div class="mt-6 p-4 bg-green-100 border border-green-400 rounded-lg text-center">
+        <p class="text-xl font-semibold text-gray-800">Kết quả: <span class="text-blue-700">${data.result}</span></p>
+        <p class="text-sm text-gray-700 mt-2">Tỷ lệ ảnh giả: ${data.prob_fake}</p>
+        <p class="text-sm text-gray-700">Tỷ lệ ảnh thật: ${data.prob_real}</p>
+        <p class="text-sm text-gray-700">Mô hình sử dụng: ${data.model_used}</p>
+      </div>`;
+        document.getElementById('predict').appendChild(resultBox);
+      } catch (err) {
+        alert("Lỗi gửi dự đoán.");
+        console.error(err);
+      } finally {
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('btnText').textContent = 'Dự đoán';
+        document.getElementById('loadingSpinner').classList.add('hidden');
+      }
+    });
+
+
+
+    function showSection(type) {
+      document.getElementById('section-all').classList.add('hidden');
+      document.getElementById('section-fake').classList.add('hidden');
+      document.getElementById('section-real').classList.add('hidden');
+
+      if (type === 'all') {
+        document.getElementById('section-all').classList.remove('hidden');
+      } else if (type === 'fake') {
+        document.getElementById('section-fake').classList.remove('hidden');
+      } else if (type === 'real') {
+        document.getElementById('section-real').classList.remove('hidden');
+      }
+    }
+    window.onload = () => {
+      switchSection('intro');
+    };
+  </script>
+</body>
+
+</html>
